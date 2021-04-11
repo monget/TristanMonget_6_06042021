@@ -6,7 +6,7 @@ const path = require('path');
 const saucesRoutes = require('./routes/sauces');
 const usersRoutes = require('./routes/users');
 
-mongoose.connect('mongodb+srv://tristan-monget:WivAMGWE7hD5H88@cluster0.e96ew.mongodb.net/test?retryWrites=true&w=majority',
+mongoose.connect('NULL',
 { useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true
