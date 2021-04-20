@@ -1,16 +1,17 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+require('dotenv').config()
 
 const saucesRoutes = require('./routes/sauces');
 const usersRoutes = require('./routes/users');
 
-mongoose.connect('mongodb+srv://********************@cluster0.e96ew.mongodb.net/test?retryWrites=true&w=majority',
-{ useNewUrlParser: true,
+mongoose.connect(process.env.DB_URL,
+{ 
+  useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true
- })
+})
 .then(() => console.log('Connexion à MongoDB réussie !'))
 .catch(() => console.log('Connexion à MongoDB échouée !'));
 
@@ -23,7 +24,6 @@ app.use((req, res, next) => {
   next();
 });
 
-//app.use(bodyParser.json());
 app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
