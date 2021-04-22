@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const helmet = require('helmet');
+const cookieSession  = require('cookie-session');
 require('dotenv').config()
 
 const saucesRoutes = require('./routes/sauces');
@@ -24,7 +26,20 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(helmet());
 app.use(express.json());
+
+const expiryDate = new Date(Date.now() + 3600000);
+app.use(cookieSession({
+  name: 'session',
+  secret: " hrxpf12765 * ù & s @ ssss875fin =? Sslm ",
+  cookie: {
+    secure: true,
+    httpOnly: true,
+    domain: 'http://localhost:3000',
+    expires: expiryDate
+  }
+}));
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 

@@ -1,7 +1,7 @@
-const { body, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 
 exports.signup = [
-    body('email')
+    check('email')
     .isEmail()
     .normalizeEmail()
     .matches(/^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/)
@@ -16,7 +16,7 @@ exports.signup = [
                 next();
             }
         },
-    body('password')
+    check('password')
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-zÀ-ÖØ-öø-ÿ\d@$!%*?&\s_-]{8,}$/)
     .withMessage("Le mot de passe doit contenir au minimun 8 caractères dont un chiffre, une lettre majuscule et une minuscule."),
         (req, res, next) => {
@@ -32,7 +32,7 @@ exports.signup = [
 ];
 
 exports.login = [
-    body('email')
+    check('email')
     .matches(/^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/)
     .withMessage("Merci de renseigner une adresse email valide !"),
         (req, res, next) => {
@@ -47,11 +47,28 @@ exports.login = [
         }
 ];
 
-exports.sauce = [
-    body('name').trim().escape(),
-    body('manufacturer').trim().escape(),
-    body('description').trim().escape(),
-    body('mainPepper').trim().escape(),
+exports.createSauce = [
+    check('name').trim().escape(),
+    check('manufacturer').trim().escape(),
+    check('description').trim().escape(),
+    check('mainPepper').trim().escape(),
+        (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                res.statusMessage = "Merci de renseigner tous les champs !";
+                res.status(400).end();
+            }
+            else {
+                next();
+            }
+        }
+];
+
+exports.modifySauce = [
+    check('name').trim().escape(),
+    check('manufacturer').trim().escape(),
+    check('description').trim().escape(),
+    check('mainPepper').trim().escape(),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
