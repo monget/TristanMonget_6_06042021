@@ -48,27 +48,33 @@ exports.login = [
 ];
 
 exports.createSauce = [
-    check('name').trim().escape(),
-    check('manufacturer').trim().escape(),
-    check('description').trim().escape(),
-    check('mainPepper').trim().escape(),
+    check('name').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
+    check('manufacturer').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
+    check('description').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
+    check('mainPepper').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
         (req, res, next) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                res.statusMessage = "Merci de renseigner tous les champs !";
-                res.status(400).end();
+            if (req.file != undefined) {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    res.statusMessage = "Merci de renseigner tous les champs !";
+                    res.status(400).end();
+                }
+                else {
+                    next();
+                }
             }
             else {
-                next();
+                res.statusMessage = "Merci d'ajouter une image !";
+                res.status(500).end();
             }
         }
 ];
 
 exports.modifySauce = [
-    check('name').trim().escape(),
-    check('manufacturer').trim().escape(),
-    check('description').trim().escape(),
-    check('mainPepper').trim().escape(),
+    check('name').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
+    check('manufacturer').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
+    check('description').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape('&#x27;'),
+    check('mainPepper').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
