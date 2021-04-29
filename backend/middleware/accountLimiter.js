@@ -2,7 +2,7 @@ const rateLimit = require('express-rate-limit');
 
 const rateLimitMiddleware = rateLimit({
       windowMs: 60 * 60 * 1000,
-      max: 30,
+      max: 40,
       headers: true,
       handler: function (req, res, next) {
          resetTime = req.rateLimit.resetTime.toLocaleString('fr-FR', {
