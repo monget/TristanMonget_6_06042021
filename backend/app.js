@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const path = require('path');
 const helmet = require('helmet');
 const cookieSession  = require('cookie-session');
+const cookieparser = require ('cookie-parser')
+const Keygrip = require('keygrip');
 require('dotenv').config()
 
 const saucesRoutes = require('./routes/sauces');
@@ -29,16 +31,16 @@ app.use((req, res, next) => {
 
 app.use(helmet());
 app.use(express.json());
+app.use(cookieparser());
 
-const expiryDate = new Date(Date.now() + 3600000);
+const expiryDate = new Date(Date.now() + 60 * 60 * 1000);
 app.use(cookieSession({
   name: 'session',
-  secret: " hrxpf12765 * ù & s @ ssss875fin =? Sslm ",
+  keys: new Keygrip([process.env.COOKIESECRET1, process.env.COOKIESECRET2], 'SHA256', 'base64'),
   cookie: {
-    secure: true,
     httpOnly: true,
-    domain: 'http://localhost:3000',
-    expires: expiryDate
+    expires: expiryDate,
+    sameSite: 'strict'
   }
 }));
 
