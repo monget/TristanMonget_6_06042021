@@ -1,5 +1,6 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
 exports.createSauce = (req, res, next) => {
     let sauceObject = req.body;
@@ -24,18 +25,26 @@ exports.modifySauce = (req, res, next) => {
     } : { ...req.body };
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
-            if (req.file != undefined) {
-                const filename = sauce.imageUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, () => {
+            const token = req.headers.authorization.split(' ')[1];
+            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+            const userId = decodedToken.userId;
+            if (userId == req.body.userId) {
+                if (req.file != undefined) {
+                    const filename = sauce.imageUrl.split('/images/')[1];
+                    fs.unlink(`images/${filename}`, () => {
+                        Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+                            .then(() => res.status(200).json({ message: 'Objet modifié !'}))
+                            .catch(error => res.status(400).json({ error }));
+                    })
+                }
+                else {
                     Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
                         .then(() => res.status(200).json({ message: 'Objet modifié !'}))
                         .catch(error => res.status(400).json({ error }));
-                })
+                }
             }
             else {
-                Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-                    .catch(error => res.status(400).json({ error }));
+                return res.status(400).json({ error });
             }
         })
         .catch(error => res.status(400).json({ error }));
@@ -44,12 +53,20 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
-            const filename = sauce.imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
-                Sauce.deleteOne({ _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
-                    .catch(error => res.status(400).json({ error }));
-            })
+            const token = req.headers.authorization.split(' ')[1];
+            const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+            const userId = decodedToken.userId;
+            if (userId == sauce.userId) {
+                const filename = sauce.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {
+                    Sauce.deleteOne({ _id: req.params.id })
+                        .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+                        .catch(error => res.status(400).json({ error }));
+                })
+            }
+            else {
+                return res.status(500).json({ error: "Opération interdite !" });
+            }
         })
         .catch(error => res.status(500).json({ error }));
 };
