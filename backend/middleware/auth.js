@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-
 const User = require('../models/User');
 
 module.exports = (req, res, next) => {
@@ -16,9 +15,7 @@ module.exports = (req, res, next) => {
                     next();
                 }
             })
-            .catch (error => {
-                res.status(401).json({ error: 'Requête non authentifié !' })
-            })
+            .catch(error => res.status(401).json({ error }))
     }
     catch (error) {
         res.status(401).json({ error: 'Requête non authentifié !' })

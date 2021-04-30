@@ -8,7 +8,7 @@ exports.createSauce = (req, res, next) => {
     sauceObject.likes = 0;
     sauceObject.dislikes = 0;
     const sauce = new Sauce({
-        ...sauceObject,
+        ...sauceObject, // Opérateur spread extrait toutes les données de sauceObject pour les transmettre au nouveau schéma
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
     sauce.save()
@@ -17,11 +17,10 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ?
+    const sauceObject = req.file ? // Contrôle si req.file existe
     { 
-        ...JSON.parse(req.body.sauce),
+        ...req.body,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        
     } : { ...req.body };
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
@@ -44,7 +43,7 @@ exports.modifySauce = (req, res, next) => {
                 }
             }
             else {
-                return res.status(400).json({ error });
+                return res.status(400).json({ error: "Opération interdite !" });
             }
         })
         .catch(error => res.status(400).json({ error }));
@@ -58,14 +57,14 @@ exports.deleteSauce = (req, res, next) => {
             const userId = decodedToken.userId;
             if (userId == sauce.userId) {
                 const filename = sauce.imageUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, () => {
+                fs.unlink(`images/${filename}`, () => { // Supprime l'image du server puis les données de la sauce
                     Sauce.deleteOne({ _id: req.params.id })
                         .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
                         .catch(error => res.status(400).json({ error }));
                 })
             }
             else {
-                return res.status(500).json({ error: "Opération interdite !" });
+                return res.status(400).json({ error: "Opération interdite !" });
             }
         })
         .catch(error => res.status(500).json({ error }));

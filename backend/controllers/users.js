@@ -10,7 +10,7 @@ exports.signup = (req, res, next) => {
     User.find()
         .then(users => {
             const data = []
-            for (const [key, value] of Object.entries(users)) {
+            for (const [key, value] of Object.entries(users)) { // Récupére toutes les clés et valeurs dans la DB
                 const bytes  = CryptoJS.AES.decrypt(`${value.email}`, process.env.SECRET_KEY);
                 const originalText = bytes.toString(CryptoJS.enc.Utf8);
                 const user = {
@@ -19,12 +19,12 @@ exports.signup = (req, res, next) => {
                 }
                 data.push(user)
             }
-            const email = data.find(el => el.email == req.body.email);
+            const email = data.find(el => el.email == req.body.email);  // Compare l'email avec ceux présent dans la BDD
             if (email == undefined) {
-                bcrypt.hash(req.body.password, 10)
+                bcrypt.hash(req.body.password, 10) // Hash du mot de passe avec 10 tours pour le sel
                     .then(hash => {
                         const data = req.body.email;
-                        const cryptEmail = CryptoJS.AES.encrypt(data, process.env.SECRET_KEY).toString();
+                        const cryptEmail = CryptoJS.AES.encrypt(data, process.env.SECRET_KEY).toString(); // cryptage de l'email
                         const user = new User({
                             email: cryptEmail,
                             password: hash

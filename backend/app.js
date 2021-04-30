@@ -10,7 +10,7 @@ require('dotenv').config()
 const saucesRoutes = require('./routes/sauces');
 const usersRoutes = require('./routes/users');
 
-mongoose.connect(process.env.DB_URL,
+mongoose.connect(process.env.DB_URL,  // Permet les interactions avec MongoDB
 { 
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -21,7 +21,7 @@ mongoose.connect(process.env.DB_URL,
 
 const app = express();
 
-app.use((req, res, next) => {
+app.use((req, res, next) => { // Headers pour accéder à notre API depuis n'importe quelle origine
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
