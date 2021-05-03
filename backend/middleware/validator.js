@@ -82,24 +82,23 @@ exports.modifySauce = [
     check('description').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape('&#x27;'),
     check('mainPepper').not().isEmpty().trim().blacklist(['$','<>','{}','/']).escape().unescape("&#x27;"),
         (req, res, next) => {
-            if (req.file != undefined) {
-                const errors = validationResult(req);
-                if (!errors.isEmpty()) {
-                    res.statusMessage = "Merci de renseigner tous les champs !";
-                    res.status(400).end();
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                res.statusMessage = "Merci de renseigner tous les champs !";
+                res.status(400).end();
+            }
+            else {
+                if (req.file == undefined) {
+                    next();
                 }
                 else if (req.file.filename == "error") {
                     fs.unlinkSync(`images/error`);
-                    res.statusMessage = "Extensions image jpg, jpeg ou bmp seulement autorisées !";
+                    res.statusMessage = "Extensions image jpg, jpeg ou png seulement autorisées !";
                     res.status(400).end();
                 }
                 else {
                     next();
                 }
-            }
-            else {
-                res.statusMessage = "Merci d'ajouter une image !";
-                res.status(400).end();
             }
         }
 ];
